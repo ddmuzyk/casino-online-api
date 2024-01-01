@@ -16,5 +16,7 @@ app.post('/eval', (req, res) => {
     }
     res.status(200).json(evaluations);
 });
-app.listen(3000);
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`app is running on port ${process.env.PORT ? process.env.PORT : 3000}`);
+});
 //# sourceMappingURL=server.js.map
