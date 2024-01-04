@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
     res.send('Hello World!!!');
 });
 app.post('/eval', (req, res) => {
-    console.log('Body: ', req.body);
+    // console.log('Body: ' , req.body)
     const cards = req.body;
     const evaluations = [];
     for (let i = 0; i < cards.length; i++) {

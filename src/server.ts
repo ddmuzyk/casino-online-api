@@ -12,7 +12,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.post('/eval', (req: Request, res: Response) => {
-  console.log('Body: ' , req.body)
+  // console.log('Body: ' , req.body)
   const cards = req.body;
   const evaluations = [];
   for (let i = 0; i < cards.length; i++) { 
@@ -21,7 +21,6 @@ app.post('/eval', (req: Request, res: Response) => {
   res.status(200).json(evaluations);
 })
 
-console.log('hi')
 app.listen(process.env.PORT || 3000, () => {
   console.log(`app is running on port ${process.env.PORT ? process.env.PORT : 3000}`);
 })
