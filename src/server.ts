@@ -1,21 +1,20 @@
 import 'dotenv/config';
 import pg from 'pg';
-const {Client} = pg;
+import bcrypt from 'bcrypt';
+const {Pool} = pg;
 import express from 'express';
 import { Request, Response } from 'express';
 import * as PokerEvaluator from 'poker-evaluator';
 import cors from "cors";
 import register from './controllers/register.js';
 
-export const client = new Client({
+export const pool = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD, 
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
 });
-
-await client.connect();
 
 const app = express();
 app.use(express.json());
@@ -25,10 +24,9 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!!!');
 });
 
-app.post('/register', (req: Request, res: Response) => register(req, res, client));
+app.post('/register', async (req: Request, res: Response) => { await register(req, res, pool, bcrypt)});
 
 app.post('/eval', (req: Request, res: Response) => {
-  // console.log('Body: ' , req.body)
   const cards = req.body;
   const evaluations = [];
   for (let i = 0; i < cards.length; i++) { 
