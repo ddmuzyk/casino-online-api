@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 
 const register = async (req: Request, res: Response, pool, bcrypt) => {
   const {name, email, password} = req.body;
@@ -19,7 +20,7 @@ const register = async (req: Request, res: Response, pool, bcrypt) => {
       await client.query('INSERT INTO users(name, email) VALUES($1, $2)', [name, email]);
       await client.query('INSERT INTO login(email, hash) VALUES($1, $2)', [email, hashedPassword]);
       await client.query('COMMIT');
-      res.status(201).send('User created');
+      res.status(201).json("User successfully created");
     } catch (err){
       await client.query('ROLLBACK');
       res.status(500).send(err.message);

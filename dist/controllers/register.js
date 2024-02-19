@@ -17,7 +17,7 @@ const register = async (req, res, pool, bcrypt) => {
             await client.query('INSERT INTO users(name, email) VALUES($1, $2)', [name, email]);
             await client.query('INSERT INTO login(email, hash) VALUES($1, $2)', [email, hashedPassword]);
             await client.query('COMMIT');
-            res.status(201).send('User created');
+            res.status(201).json("User successfully created");
         }
         catch (err) {
             await client.query('ROLLBACK');
