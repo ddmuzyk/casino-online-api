@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 const signIn = async (req: Request, res: Response, pool, bcrypt) => {
   const { email, password } = req.body;
@@ -22,6 +23,11 @@ const signIn = async (req: Request, res: Response, pool, bcrypt) => {
     const user = { email };
     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: "24h",
+    });
+    res.cookie("accessToken", accessToken, {
+      // httpOnly: true,
+      secure: true,
+      sameSite: "none",
     });
     res.status(200).json({ accessToken });
   } catch (err) {

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import pg from 'pg';
 import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
 import bcrypt from 'bcrypt';
 const {Pool} = pg;
 import express from 'express';
@@ -28,7 +29,11 @@ export const pool = new Pool({
 
 const app = express();
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true
+}));
+// app.use(cookieParser());
 
 const authenticateToken = (req: Request, res: Response, next: any) => {
   const authHeader = req.headers['authorization'];

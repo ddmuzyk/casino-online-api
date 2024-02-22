@@ -21,6 +21,11 @@ const signIn = async (req, res, pool, bcrypt) => {
         const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: "24h",
         });
+        res.cookie("accessToken", accessToken, {
+            // httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
         res.status(200).json({ accessToken });
     }
     catch (err) {

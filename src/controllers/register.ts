@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 const register = async (req: Request, res: Response, pool, bcrypt) => {
-  const {name, email, password} = req.body;
-  if (!name || !email || !password) {
+  const {username, email, password} = req.body;
+  console.log(req.body);
+  if (!username || !email || !password) {
     res.status(400).send('Bad Request');
     return;
   }
@@ -17,7 +18,7 @@ const register = async (req: Request, res: Response, pool, bcrypt) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
       await client.query('BEGIN');
-      await client.query('INSERT INTO users(name, email) VALUES($1, $2)', [name, email]);
+      await client.query('INSERT INTO users(name, email) VALUES($1, $2)', [username, email]);
       await client.query('INSERT INTO login(email, hash) VALUES($1, $2)', [email, hashedPassword]);
       await client.query('COMMIT');
       res.status(201).json("User successfully created");
