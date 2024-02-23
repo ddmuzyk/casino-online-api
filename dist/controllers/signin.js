@@ -26,7 +26,7 @@ const signIn = async (req, res, pool, bcrypt) => {
             secure: true,
             sameSite: "none",
         });
-        res.status(200).json({ accessToken });
+        res.status(200).json("Logged in");
     }
     catch (err) {
         res.status(500).send("Internal Server Error");

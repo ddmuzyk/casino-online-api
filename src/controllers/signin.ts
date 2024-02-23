@@ -29,7 +29,7 @@ const signIn = async (req: Request, res: Response, pool, bcrypt) => {
       secure: true,
       sameSite: "none",
     });
-    res.status(200).json({ accessToken });
+    res.status(200).json("Logged in");
   } catch (err) {
     res.status(500).send("Internal Server Error");
   } finally {
