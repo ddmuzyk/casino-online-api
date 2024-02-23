@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import pg from 'pg';
 import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
 import bcrypt from 'bcrypt';
 const { Pool } = pg;
 import express from 'express';
@@ -8,6 +9,7 @@ import * as PokerEvaluator from 'poker-evaluator';
 import cors from "cors";
 import register from './controllers/register.js';
 import signIn from './controllers/signin.js';
+import transaction from './controllers/transaction.js';
 export const pool = new Pool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -21,7 +23,7 @@ app.use(cors({
     origin: 'http://localhost:3001',
     credentials: true
 }));
-// app.use(cookieParser());
+app.use(cookieParser());
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -43,6 +45,7 @@ app.get('/', authenticateToken, (req, res) => {
 });
 app.post('/register', async (req, res) => { await register(req, res, pool, bcrypt); });
 app.post('/signin', async (req, res) => { await signIn(req, res, pool, bcrypt); });
+app.post('/takemoney', async (req, res) => { await transaction(req, res, pool, bcrypt); });
 app.post('/eval', (req, res) => {
     const cards = req.body;
     const evaluations = [];

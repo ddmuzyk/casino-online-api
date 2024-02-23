@@ -10,6 +10,7 @@ import * as PokerEvaluator from 'poker-evaluator';
 import cors from "cors";
 import register from './controllers/register.js';
 import signIn from './controllers/signin.js';
+import transaction from './controllers/transaction.js';
 
 declare global {
   namespace Express {
@@ -33,7 +34,7 @@ app.use(cors({
   origin: 'http://localhost:3001',
   credentials: true
 }));
-// app.use(cookieParser());
+app.use(cookieParser());
 
 const authenticateToken = (req: Request, res: Response, next: any) => {
   const authHeader = req.headers['authorization'];
@@ -58,6 +59,7 @@ app.get('/', authenticateToken, (req: Request, res: Response) => {
 
 app.post('/register', async (req: Request, res: Response) => { await register(req, res, pool, bcrypt)});
 app.post('/signin', async (req: Request, res: Response) => { await signIn(req, res, pool, bcrypt)});
+app.post('/takemoney', async (req: Request, res: Response) => { await transaction(req, res, pool, bcrypt)});
 
 app.post('/eval', (req: Request, res: Response) => {
   const cards = req.body;
