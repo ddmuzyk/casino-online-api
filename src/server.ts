@@ -12,6 +12,8 @@ import register from './controllers/register.js';
 import signIn from './controllers/signin.js';
 import transaction from './controllers/transaction.js';
 
+const connectionString = process.env.DB_INTERNAL_CONNECTION_STRING;
+
 declare global {
   namespace Express {
     export interface Request {
@@ -21,39 +23,35 @@ declare global {
 }
 
 export const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD, 
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+  connectionString
 });
 
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:3001', 'https://casino-online-theta.vercel.app/api', ],
+  origin: ['http://localhost:3001', 'https://casino-online-theta.vercel.app', ],
   credentials: true,
 }));
 app.use(cookieParser());
 
-const authenticateToken = (req: Request, res: Response, next: any) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) {
-    res.status(401).send('Unauthorized');
-    return;
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user: any) => {
-    if (err) {
-      res.status(403).send('Forbidden');
-      return;
-    }
-    req.user = user;
-    next();
-  });
-}
+// const authenticateToken = (req: Request, res: Response, next: any) => {
+//   const authHeader = req.headers['authorization'];
+//   const token = authHeader && authHeader.split(' ')[1];
+//   if (!token) {
+//     res.status(401).send('Unauthorized');
+//     return;
+//   }
+//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user: any) => {
+//     if (err) {
+//       res.status(403).send('Forbidden');
+//       return;
+//     }
+//     req.user = user;
+//     next();
+//   });
+// }
 
-app.get('/', authenticateToken, (req: Request, res: Response) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!!!');
 });
 

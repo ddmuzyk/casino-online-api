@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 const signIn = async (req, res, pool, bcrypt) => {
     const { email, password } = req.body;
-    console.log(req.body);
     if (!email || !password) {
         res.status(400).send("Bad Request");
         return;
@@ -25,6 +24,7 @@ const signIn = async (req, res, pool, bcrypt) => {
         res.status(200).json({ accessToken });
     }
     catch (err) {
+        console.error(err);
         res.status(500).send("Internal Server Error");
     }
     finally {
