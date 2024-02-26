@@ -14,7 +14,7 @@ const transaction = async (req, res, pool, bcrypt) => {
             return;
         }
         req.user = user;
-        console.log(req.user);
+        // console.log(req.user);
     });
     const client = await pool.connect();
     if (action === 'lookup') {
@@ -24,7 +24,7 @@ const transaction = async (req, res, pool, bcrypt) => {
                 res.status(401).send('Invalid email');
                 return;
             }
-            console.log(data.rows[0]);
+            // console.log(data.rows[0]);
             res.status(200).json(data.rows[0]);
         }
         catch (err) {
