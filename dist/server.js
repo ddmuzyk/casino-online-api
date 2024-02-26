@@ -20,8 +20,8 @@ export const pool = new Pool({
 const app = express();
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3001',
-    credentials: true
+    origin: ['http://localhost:3001', 'https://casino-online-theta.vercel.app'],
+    credentials: true,
 }));
 app.use(cookieParser());
 const authenticateToken = (req, res, next) => {

@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 
 const signIn = async (req: Request, res: Response, pool, bcrypt) => {
   const { email, password } = req.body;
+  console.log(req.body);
   if (!email || !password) {
     res.status(400).send("Bad Request");
     return;
@@ -24,12 +25,7 @@ const signIn = async (req: Request, res: Response, pool, bcrypt) => {
     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: "24h",
     });
-    res.cookie("accessToken", accessToken, {
-      // httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-    res.status(200).json("Logged in");
+    res.status(200).json({accessToken});
   } catch (err) {
     res.status(500).send("Internal Server Error");
   } finally {
@@ -37,4 +33,4 @@ const signIn = async (req: Request, res: Response, pool, bcrypt) => {
   }
 }
 
-export default signIn;
+export default signIn; 
