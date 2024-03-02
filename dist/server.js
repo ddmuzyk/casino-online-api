@@ -11,7 +11,11 @@ import signIn from './controllers/signin.js';
 import transaction from './controllers/transaction.js';
 const connectionString = process.env.DB_INTERNAL_CONNECTION_STRING;
 export const pool = new Pool({
-    connectionString
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 });
 const app = express();
 app.use(express.json());
