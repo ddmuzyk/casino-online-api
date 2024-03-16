@@ -6,6 +6,7 @@ const transaction = async (req: Request, res: Response, pool, bcrypt) => {
   const {cookies, action} = req.body;
   // const cookie = req.cookies;
   let accessToken = cookies ? cookies.accessToken : null;
+  console.log('cookie: ', cookies);
   if (!accessToken) {
     console.log('no token');
     res.status(401).send('Unauthorized');
@@ -15,13 +16,12 @@ const transaction = async (req: Request, res: Response, pool, bcrypt) => {
     if (err) {
       console.log(err);
       res.status(403).send('Forbidden');
-      return;
+      return; 
     }
     req.user = user; 
   });
   const client = await pool.connect();
   if (action.type === 'lookup') {
-    console.log('lookup');
     try {
       const data = await client.query('SELECT * FROM users WHERE email = $1', [req.user.email]);
       if (data.rows.length === 0) {
