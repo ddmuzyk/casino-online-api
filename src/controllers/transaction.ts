@@ -4,10 +4,8 @@ import cookieParser from 'cookie-parser';
 
 const transaction = async (req: Request, res: Response, pool, bcrypt) => {
   const {cookies, action} = req.body;
-  const cookie = req.cookies;
-  // console.log('Cookie: ', cookie)
-  let accessToken = cookies ? cookies.accessToken : cookie ? cookie.accessToken : null;
-  // console.log(accessToken);
+  // const cookie = req.cookies;
+  let accessToken = cookies ? cookies.accessToken : null;
   if (!accessToken) {
     console.log('no token');
     res.status(401).send('Unauthorized');
@@ -20,17 +18,16 @@ const transaction = async (req: Request, res: Response, pool, bcrypt) => {
       return;
     }
     req.user = user; 
-    // console.log(req.user);
   });
   const client = await pool.connect();
   if (action.type === 'lookup') {
+    console.log('lookup');
     try {
       const data = await client.query('SELECT * FROM users WHERE email = $1', [req.user.email]);
       if (data.rows.length === 0) {
         res.status(401).send('Invalid email');
         return;
       }
-      // console.log(data.rows[0]);
       res.status(200).json(data.rows[0]);
     } catch (err) {
       res.status(500).send('Internal Server Error');
@@ -49,15 +46,18 @@ const transaction = async (req: Request, res: Response, pool, bcrypt) => {
       const newBalance = action.take === true ? userBalance - action.amount : userBalance + action.amount;
       await client.query('UPDATE users SET money = $1 WHERE email = $2', [newBalance, req.user.email]);
       await client.query('COMMIT');
+      console.log('Success');
+      return res.status(200).json('Success');
     } catch (err) {
       await client.query('ROLLBACK');
-      res.status(500).send('Internal Server Error');
+      return res.status(500).send('Internal Server Error');
     } finally {
       await client.release();
     }
   } else {
     res.status(400).send('Bad Request');
-  }
+    await client.release();
+  } 
 }
 
 export default transaction;
