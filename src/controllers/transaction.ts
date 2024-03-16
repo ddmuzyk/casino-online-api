@@ -1,9 +1,13 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
+import cookieParser from 'cookie-parser';
 
 const transaction = async (req: Request, res: Response, pool, bcrypt) => {
   const {cookies, action} = req.body;
-  let accessToken = cookies ? cookies.accessToken : null;
+  const cookie = req.cookies;
+  // console.log('Cookie: ', cookie)
+  let accessToken = cookies ? cookies.accessToken : cookie ? cookie.accessToken : null;
+  // console.log(accessToken);
   if (!accessToken) {
     console.log('no token');
     res.status(401).send('Unauthorized');
@@ -15,11 +19,11 @@ const transaction = async (req: Request, res: Response, pool, bcrypt) => {
       res.status(403).send('Forbidden');
       return;
     }
-    req.user = user;
+    req.user = user; 
     // console.log(req.user);
   });
   const client = await pool.connect();
-  if (action === 'lookup') {
+  if (action.type === 'lookup') {
     try {
       const data = await client.query('SELECT * FROM users WHERE email = $1', [req.user.email]);
       if (data.rows.length === 0) {
@@ -33,6 +37,26 @@ const transaction = async (req: Request, res: Response, pool, bcrypt) => {
     } finally {
       await client.release();
     }
+  } else if (action.type === 'update') {
+    try {
+      await client.query('BEGIN');
+      const userBalanceRow = await client.query('SELECT money FROM users WHERE email = $1', [req.user.email]);
+      if (userBalanceRow.rows.length === 0) {
+        res.status(401).send('Invalid email');
+        return;
+      }
+      const userBalance = Number(userBalanceRow.rows[0].money);
+      const newBalance = action.take === true ? userBalance - action.amount : userBalance + action.amount;
+      await client.query('UPDATE users SET money = $1 WHERE email = $2', [newBalance, req.user.email]);
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      res.status(500).send('Internal Server Error');
+    } finally {
+      await client.release();
+    }
+  } else {
+    res.status(400).send('Bad Request');
   }
 }
 
