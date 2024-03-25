@@ -7,9 +7,11 @@ const register = async (req, res, pool, bcrypt) => {
     }
     const client = await pool.connect();
     try {
-        const data = await client.query('SELECT email FROM users WHERE email = $1', [email]);
+        await client.query('BEGIN');
+        const data = await client.query('SELECT email, name FROM users WHERE email = $1 OR name = $2', [email, username]);
+        console.log(data.rows);
         if (data.rows.length > 0) {
-            res.status(409).send('User with this email already exists');
+            res.status(409).send('User with these credentials already exists');
             return;
         }
         const hashedPassword = await bcrypt.hash(password, 10);

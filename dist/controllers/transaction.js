@@ -3,7 +3,6 @@ const transaction = async (req, res, pool, bcrypt) => {
     const { cookies, action } = req.body;
     // const cookie = req.cookies;
     let accessToken = cookies ? cookies.accessToken : null;
-    console.log('cookie: ', cookies);
     if (!accessToken) {
         console.log('no token');
         res.status(401).send('Unauthorized');
